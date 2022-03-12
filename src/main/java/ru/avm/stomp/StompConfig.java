@@ -26,6 +26,8 @@ public class StompConfig extends AbstractSecurityWebSocketMessageBrokerConfigure
 
     private final List<StompSubscriptionAuthenticator> authenticators;
 
+
+
     @Bean
     public StompTopicSubscriptionInterceptor stompTopicSubscriptionInterceptor() {
         return new StompTopicSubscriptionInterceptor(authenticators);
