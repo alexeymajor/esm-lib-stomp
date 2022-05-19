@@ -21,12 +21,12 @@ import java.util.List;
 @EnableWebSocketMessageBroker
 public class StompConfig extends AbstractSecurityWebSocketMessageBrokerConfigurer {
 
+    private final StompProperties stompProperties;
+
     private final RabbitProperties rabbitProperties;
     private static final Integer STOMP_PORT = 61613;
 
     private final List<StompSubscriptionAuthenticator> authenticators;
-
-
 
     @Bean
     public StompTopicSubscriptionInterceptor stompTopicSubscriptionInterceptor() {
@@ -51,7 +51,7 @@ public class StompConfig extends AbstractSecurityWebSocketMessageBrokerConfigure
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/stomp")
+        registry.addEndpoint(stompProperties.endpoints.toArray(String[]::new))
                 .setAllowedOriginPatterns("*")
                 .withSockJS();
     }

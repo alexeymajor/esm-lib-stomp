@@ -45,9 +45,7 @@ public class StompTopicSubscriptionInterceptor implements ChannelInterceptor {
             log.info("FAIL subscription: " + headerAccessor);
             return null;
         }
-
-        log.info("SUCCESS subscription: " + headerAccessor);
-
+        log.debug("SUCCESS subscription: " + headerAccessor);
         return message;
     }
 
