@@ -9,7 +9,6 @@ import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.security.config.annotation.web.messaging.MessageSecurityMetadataSourceRegistry;
 import org.springframework.security.config.annotation.web.socket.AbstractSecurityWebSocketMessageBrokerConfigurer;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 
@@ -19,7 +18,6 @@ import java.util.List;
 
 @Slf4j
 @Configuration
-@Controller
 @EnableWebSocketMessageBroker
 public class StompConfig extends AbstractSecurityWebSocketMessageBrokerConfigurer {
 
