@@ -10,13 +10,13 @@
     </parent>
     <groupId>ru.avm</groupId>
     <artifactId>stomp</artifactId>
-    <version>1.0.7</version>
+    <version>1.0.8</version>
     <name>stomp</name>
     <description>stomp</description>
     <properties>
         <java.version>11</java.version>
-        <avm.security>1.0.7</avm.security>
-        <avm.common>1.0.7</avm.common>
+        <avm.security>1.0.8</avm.security>
+        <avm.common>1.0.8</avm.common>
     </properties>
     <dependencies>
         <dependency>
