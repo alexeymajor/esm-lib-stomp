@@ -1,6 +1,6 @@
-package ru.avm.stomp;
+package ru.avm.lib.stomp;
 
-import ru.avm.common.dto.AuthUserDto;
+import ru.avm.lib.common.dto.AuthUserDto;
 
 public class TrustStompSubscriptionAuthenticator implements StompSubscriptionAuthenticator {
     @Override

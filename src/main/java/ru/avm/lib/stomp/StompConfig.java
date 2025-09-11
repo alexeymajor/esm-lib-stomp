@@ -1,16 +1,19 @@
-package ru.avm.stomp;
+package ru.avm.lib.stomp;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.amqp.RabbitProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.messaging.Message;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
-import org.springframework.security.config.annotation.web.messaging.MessageSecurityMetadataSourceRegistry;
-import org.springframework.security.config.annotation.web.socket.AbstractSecurityWebSocketMessageBrokerConfigurer;
+import org.springframework.security.authorization.AuthorizationManager;
+import org.springframework.security.config.annotation.web.socket.EnableWebSocketSecurity;
+import org.springframework.security.messaging.access.intercept.MessageMatcherDelegatingAuthorizationManager;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
+import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
 import java.util.List;
 
@@ -18,15 +21,25 @@ import java.util.List;
 
 @Slf4j
 @Configuration
+@EnableWebSocketSecurity
 @EnableWebSocketMessageBroker
-public class StompConfig extends AbstractSecurityWebSocketMessageBrokerConfigurer {
+public class StompConfig implements WebSocketMessageBrokerConfigurer {
 
     private final StompProperties stompProperties;
-
     private final RabbitProperties rabbitProperties;
     private static final Integer STOMP_PORT = 61613;
 
     private final List<StompSubscriptionAuthenticator> authenticators;
+
+    @Bean
+    public AuthorizationManager<Message<?>> authorizationManager(MessageMatcherDelegatingAuthorizationManager.Builder messages) {
+        messages.simpDestMatchers("**").permitAll()
+
+//                .simpDestMatchers("/admin/**").hasRole("ADMIN")
+                .anyMessage().permitAll();
+//        .authenticated();
+        return messages.build();
+    }
 
     @Bean
     public StompTopicSubscriptionInterceptor stompTopicSubscriptionInterceptor() {
@@ -34,20 +47,11 @@ public class StompConfig extends AbstractSecurityWebSocketMessageBrokerConfigure
     }
 
     @Override
-    protected void customizeClientInboundChannel(ChannelRegistration registration) {
+    public void configureClientInboundChannel(ChannelRegistration registration) {
         registration.interceptors(stompTopicSubscriptionInterceptor());
+        registration.taskExecutor().corePoolSize(4).maxPoolSize(8);
     }
 
-    @Override
-    protected boolean sameOriginDisabled() {
-        return true;
-    }
-
-    @Override
-    protected void configureInbound(MessageSecurityMetadataSourceRegistry messages) {
-        messages.simpDestMatchers("**").permitAll(); //.authenticated();
-        messages.anyMessage().permitAll(); //.authenticated();
-    }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {

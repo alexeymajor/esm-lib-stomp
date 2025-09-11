@@ -1,4 +1,4 @@
-package ru.avm.stomp;
+package ru.avm.lib.stomp;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -8,8 +8,7 @@ import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
-import ru.avm.common.dto.AuthUserDto;
-import ru.avm.security.TrustAuthenticationToken;
+import ru.avm.lib.security.TrustAuthenticationToken;
 
 import java.util.List;
 import java.util.Objects;
@@ -34,7 +33,7 @@ public class StompTopicSubscriptionInterceptor implements ChannelInterceptor {
         }
 
         val destination = headerAccessor.getDestination();
-        val principal = (AuthUserDto) Optional.ofNullable(headerAccessor.getHeader(USER_HEADER))
+        val principal = Optional.ofNullable(headerAccessor.getHeader(USER_HEADER))
                 .map(o -> ((TrustAuthenticationToken) o).getPrincipal())
                 .orElse(null);
 
