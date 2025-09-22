@@ -2,12 +2,14 @@ package ru.avm.lib.stomp;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.boot.autoconfigure.amqp.RabbitProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
+import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.security.authorization.AuthorizationManager;
 import org.springframework.security.config.annotation.web.socket.EnableWebSocketSecurity;
 import org.springframework.security.messaging.access.intercept.MessageMatcherDelegatingAuthorizationManager;
@@ -34,11 +36,14 @@ public class StompConfig implements WebSocketMessageBrokerConfigurer {
     @Bean
     public AuthorizationManager<Message<?>> authorizationManager(MessageMatcherDelegatingAuthorizationManager.Builder messages) {
         messages.simpDestMatchers("**").permitAll()
-
-//                .simpDestMatchers("/admin/**").hasRole("ADMIN")
                 .anyMessage().permitAll();
-//        .authenticated();
         return messages.build();
+    }
+
+    @Bean
+    public ChannelInterceptor csrfChannelInterceptor() {
+        return new ChannelInterceptor() {
+        };
     }
 
     @Bean
@@ -55,7 +60,8 @@ public class StompConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint(stompProperties.endpoints.toArray(String[]::new))
+        val paths = stompProperties.endpoints.toArray(String[]::new);
+        registry.addEndpoint(paths)
                 .setAllowedOriginPatterns("*")
                 .withSockJS();
     }
