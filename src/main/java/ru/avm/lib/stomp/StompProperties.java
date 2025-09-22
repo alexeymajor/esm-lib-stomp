@@ -12,5 +12,6 @@ public class StompProperties {
     boolean disabled = false;
     List<String> endpoints = new ArrayList<>() {{
         add("/stomp");
+        add("/stomp/");
     }};
 }
