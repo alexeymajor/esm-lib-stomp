@@ -16,6 +16,10 @@ import org.springframework.security.messaging.access.intercept.MessageMatcherDel
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
+import org.springframework.web.socket.server.support.DefaultHandshakeHandler;
+import org.springframework.web.socket.sockjs.transport.handler.WebSocketTransportHandler;
+import org.springframework.web.socket.sockjs.transport.handler.XhrPollingTransportHandler;
+import org.springframework.web.socket.sockjs.transport.handler.XhrStreamingTransportHandler;
 
 import java.util.List;
 
@@ -63,7 +67,13 @@ public class StompConfig implements WebSocketMessageBrokerConfigurer {
         val paths = stompProperties.endpoints.toArray(String[]::new);
         registry.addEndpoint(paths)
                 .setAllowedOriginPatterns("*")
-                .withSockJS();
+                .withSockJS()
+                .setTransportHandlers(
+                        new WebSocketTransportHandler(new DefaultHandshakeHandler()),
+                        new XhrPollingTransportHandler(),
+                        new XhrStreamingTransportHandler()
+                )
+                .setWebSocketEnabled(true);
     }
 
     @Override
