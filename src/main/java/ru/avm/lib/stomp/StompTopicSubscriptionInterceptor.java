@@ -41,10 +41,10 @@ public class StompTopicSubscriptionInterceptor implements ChannelInterceptor {
                 .anyMatch(authenticator -> authenticator.authenticate(destination, principal));
 
         if (!authenticated) {
-            log.info("FAIL subscription: {}", headerAccessor);
+            log.warn("FAIL subscription: {}", headerAccessor);
             return null;
         }
-        log.debug("SUCCESS subscription: {}", headerAccessor);
+        log.info("SUCCESS subscription: {}", headerAccessor);
         return message;
     }
 
