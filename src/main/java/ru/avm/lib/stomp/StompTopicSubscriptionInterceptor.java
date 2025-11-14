@@ -8,7 +8,8 @@ import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
-import ru.avm.lib.security.TrustAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import ru.avm.lib.common.dto.AuthUserDto;
 
 import java.util.List;
 import java.util.Objects;
@@ -34,16 +35,21 @@ public class StompTopicSubscriptionInterceptor implements ChannelInterceptor {
 
         val destination = headerAccessor.getDestination();
         val principal = Optional.ofNullable(headerAccessor.getHeader(USER_HEADER))
-                .map(o -> ((TrustAuthenticationToken) o).getPrincipal())
+                .map(o -> ((Authentication) o).getPrincipal())
                 .orElse(null);
+//
+//        val principal = headerAccessor.getUser();
+
+        val user = (principal instanceof AuthUserDto) ? (AuthUserDto) principal : null;
 
         val authenticated = authenticators.stream()
-                .anyMatch(authenticator -> authenticator.authenticate(destination, principal));
+                .anyMatch(authenticator -> authenticator.authenticate(destination, user));
 
         if (!authenticated) {
             log.warn("FAIL subscription: {}", headerAccessor);
             return null;
         }
+
         log.info("SUCCESS subscription: {}", headerAccessor);
         return message;
     }
