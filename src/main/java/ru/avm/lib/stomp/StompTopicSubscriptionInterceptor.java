@@ -27,7 +27,7 @@ public class StompTopicSubscriptionInterceptor implements ChannelInterceptor {
     @Override
     @SuppressWarnings("NullableProblems")
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
-        StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(message);
+        val headerAccessor = StompHeaderAccessor.wrap(message);
 
         if (!Objects.equals(headerAccessor.getCommand(), StompCommand.SUBSCRIBE)) {
             return message;
@@ -37,22 +37,23 @@ public class StompTopicSubscriptionInterceptor implements ChannelInterceptor {
         val principal = Optional.ofNullable(headerAccessor.getHeader(USER_HEADER))
                 .map(o -> ((Authentication) o).getPrincipal())
                 .orElse(null);
-//
-//        val principal = headerAccessor.getUser();
 
         val user = (principal instanceof AuthUserDto) ? (AuthUserDto) principal : null;
 
-        val authenticated = authenticators.stream()
-                .anyMatch(authenticator -> authenticator.authenticate(destination, user));
-
-        if (!authenticated) {
-            log.warn("FAIL subscription: {}", headerAccessor);
+        try {
+            val authenticated = authenticators.stream()
+                    .anyMatch(authenticator -> authenticator.authenticate(destination, user));
+            if (!authenticated) {
+                log.warn("FAIL subscription: {}", headerAccessor);
+                return null;
+            }
+        } catch (Exception e) {
+            log.error("ERROR subscription: {}", headerAccessor, e);
             return null;
         }
 
         log.info("SUCCESS subscription: {}", headerAccessor);
         return message;
     }
-
 
 }
