@@ -48,11 +48,10 @@ public class StompTopicSubscriptionInterceptor implements ChannelInterceptor {
                 return null;
             }
         } catch (Exception e) {
-            log.error("ERROR subscription: {}", headerAccessor, e);
+            log.info("ERROR subscription: {}", headerAccessor);
             return null;
         }
 
-        log.info("SUCCESS subscription: {}", headerAccessor);
         return message;
     }
 
